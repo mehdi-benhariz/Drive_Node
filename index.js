@@ -1,10 +1,19 @@
+const express = require('express')
+const app = express()
+const port = 3000
+const bodyParser = require('body-parser')
 const { google } = require('googleapis')
 const path =require('path')
 const fs = require('fs')
 const { types } = require('util')
 require('dotenv').config();
+const fileRoute =require('./routes/fileRoute')
 
-
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use('/file',fileRoute );
+app.get('/', (req, res) => res.send('Hello World!'))
+app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.use('/images', express.static(path.join(__dirname, 'images')));
 const oauth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
@@ -20,16 +29,16 @@ const drive = google.drive({
 
 const filePath= path.join(__dirname,'Calendrier.pdf')
 
-const uploadFile=async()=>{
+exports.uploadFile=async(url,title,type)=>{
     try{
        const response = await drive.files.create({
            requestBody:{
-               name:'Calendrier.pdf',
-               mimeType:'application/pdf'
+               name:title,
+               mimeType:`${type}`
            },
            media:{
-               mimeType :'application/pdf',
-               body:fs.createReadStream(filePath)
+               mimeType :type,
+               body:fs.createReadStream(url)
            }
        });
        console.log(response.data)
@@ -79,4 +88,4 @@ const generatePublicUrl=async()=>{
 
 }
 
-generatePublicUrl()
+// generatePublicUrl()
