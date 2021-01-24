@@ -1,6 +1,4 @@
 const express = require('express')
-const app = express()
-const port = 3000
 const bodyParser = require('body-parser')
 const { google } = require('googleapis')
 const path =require('path')
@@ -9,11 +7,18 @@ const { types } = require('util')
 require('dotenv').config();
 const fileRoute =require('./routes/fileRoute')
 
+const app = express()
+const port = 3000
+
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use('/file',fileRoute );
+
+app.use(express.static(__dirname + '/images'));
+
+// app.use('/images', express.static(path.join(__dirname, 'images')));
+
 app.get('/', (req, res) => res.send('Hello World!'))
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
-app.use('/images', express.static(path.join(__dirname, 'images')));
 const oauth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
@@ -34,7 +39,7 @@ exports.uploadFile=async(url,title,type)=>{
        const response = await drive.files.create({
            requestBody:{
                name:title,
-               mimeType:`${type}`
+               mimeType:type
            },
            media:{
                mimeType :type,
@@ -42,7 +47,7 @@ exports.uploadFile=async(url,title,type)=>{
            }
        });
        console.log(response.data)
-
+       return response.data
     }catch(err){
       console.log(err)        
     }
@@ -50,11 +55,9 @@ exports.uploadFile=async(url,title,type)=>{
 
 // uploadFile()
 
-const deleteFile=async()=>{
+exports.deleteFile=async(id)=>{
     try{
-      const response =await drive.files.delete({
-        fileId:'1NktIRluykdqRXbFJu-XoL5k71JecWfeh',
-      })
+      const response =await drive.files.delete({fileId:id,})
       
       console.log(response.data)
     }catch(err){

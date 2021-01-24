@@ -1,28 +1,26 @@
-const multer = require('multer');
-const {uploadFile} =require('../index')
+const index =require('../index')
 
 exports.createFile=(req,res,next)=>{
     try {
         res.send(req.file);
+        const {fieldname,filename,path,mimetype} = req.file;
+        console.log(fieldname,filename,path)
+        const data = index.uploadFile(path,filename,mimetype)
+        
       }catch(err) {
-        res.send(400);
+console.log(err);
       }
-    // console.log('sd')
-    // console.log(JSON.parse(req.body))
-    // next()
-    
-    // req.body.thing = JSON.parse(req.body.thing);
-    // const url = req.protocol + '://' + req.get('host');
+}
 
-    // const imageUrl= url + '/images/' + req.file.filename;
-    // const{ title,type} = req.body;
-    // uploadFile(imageUrl,title,type)
-    // .then(()=>console.log('success'))
-    // .catch(
-    //   (error) => {
-    //     res.status(400).json({
-    //       error: error
-    //     });
-    //   }
-    // );
+exports.deleteFile=(req,res,next)=>{
+  try{
+    
+  }
+  catch(err){
+
+  }
+}
+
+exports.updateFile=(req,res,next)=>{
+
 }
